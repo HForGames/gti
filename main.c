@@ -1,10 +1,3 @@
-/*
-** EPITECH PROJECT, 2023
-** gti
-** File description:
-** main.c
-*/
-
 #include <ncurses.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,21 +9,46 @@ void get_golf(size_t *tablen, int *max, char ***tab) {
     (*tablen) = 0;
     (*max) = 0;
     (*tab) = NULL;
+#ifdef INTALL_MODE
     char *path = getcwd(NULL, 0);
-    char *temp = calloc( strlen(path) + 15, sizeof(char));
-    FILE *fp = fopen(strcat(strcat(temp, path), "/golf_gti_MKII"), "r");
-    free(temp);
+    if (path == NULL) {
+        perror("getcwd");
+        exit(1);
+    }
+
+    char *file_path = malloc(strlen(path) + 18);
+    if (file_path == NULL) {
+        perror("malloc");
+        exit(1);
+    }
+
+    printf("%s\n", path);
+    sprintf(file_path, "%s/golf_gti_MKII", path);
     free(path);
+#else
+
+    char *file_path = malloc(30);
+
+    sprintf(file_path, "/usr/local/bin/golf_gti_MKII");
+
+#endif
+    FILE *fp = fopen(file_path, "r");
+    if (fp == NULL) {
+        perror("fopen");
+        free(file_path);
+        exit(1);
+    }
+    free(file_path);
+
     char *line = NULL;
-    size_t len = 0, read = 1, rlen;
-    while ((read = getline(&line, &len, fp)) != -1) {
-        (*tab) = realloc((*tab), sizeof(char *) * (len + 1));
+    size_t len = 0, rlen;
+    while (getline(&line, &len, fp) != -1) {
+        (*tab) = realloc((*tab), sizeof(char *) * ((*tablen) + 1));
         rlen = strlen(line);
-        if (rlen > (*max)) (*max) = rlen;
+        if ((int)rlen > (*max)) (*max) = rlen;
         (*tab)[(*tablen)] = strdup(line);
         (*tablen)++;
     }
-    (*tab)[(*tablen)] = NULL;
     free(line);
     fclose(fp);
 }
@@ -45,26 +63,31 @@ int main() {
     initscr();
     curs_set(0);
     char *temp;
-    while ((max) >= -move - COLS) {
+
+    while (max >= -move - COLS) {
         napms(20);
         erase();
         for (int i = 0; tab[i]; i++) {
             if (-move < max) {
                 temp = strndup(tab[i], -move);
-                mvprintw(LINES / 2 - tablen / 2 + i, COLS + move, "%s ", temp);
+                mvprintw(LINES / 2 - tablen / 2 + i, COLS + move, "%s", temp);
                 free(temp);
             } else if (0 >= COLS + move) {
-                temp = tab[i] + -move - COLS;
-                mvprintw(LINES / 2 - tablen / 2 + i, 0, "%s ", temp);
+                temp = tab[i] - move - COLS;
+                mvprintw(LINES / 2 - tablen / 2 + i, 0, "%s", temp);
             } else {
-                mvprintw(LINES / 2 - tablen / 2 + i, COLS + move, "%s ", tab[i]);
+                mvprintw(LINES / 2 - tablen / 2 + i, COLS + move, "%s", tab[i]);
             }
         }
         refresh();
         move--;
     }
+
     endwin();
-    for (int i = 0; tab[i]; i++)
+    for (int i = 0; tab[i]; i++) {
         free(tab[i]);
+    }
     free(tab);
+
+    return 0;
 }

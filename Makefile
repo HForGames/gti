@@ -12,7 +12,11 @@ OBJ     =	$(SRC:.c=.o)
 NAME    =   gti
 
 
+CFLAGS  = -Wall -Wextra
+
 LDFLAGS = -lncurses
+
+FEATURE_FLAGS =
 
 # Define installation directory
 INSTALL_DIR = /usr/local/bin
@@ -21,7 +25,7 @@ INSTALL_FILES = golf_gti_MKII
 all:    $(NAME)
 
 $(NAME):    $(OBJ)
-			gcc -o $(NAME) $(OBJ) $(LDFLAGS)
+			gcc $(FEATURE_FLAGS) -o $(NAME) $(OBJ) $(LDFLAGS)
 
 clean :
 	        rm -f $(OBJ)
@@ -34,7 +38,8 @@ re : 		fclean all
 debug:    CFLAGS += -g
 debug:    re
 
-install: all
+install: FEATURE_FLAGS += -DINTALL_MODE
+install: re
 		cp $(NAME) $(INSTALL_DIR)
 		cp $(INSTALL_FILES) $(INSTALL_DIR)
 		chmod 755 $(INSTALL_DIR)/$(NAME)
