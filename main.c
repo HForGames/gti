@@ -5,11 +5,17 @@
 #include <signal.h>
 #include <unistd.h>
 
+
 void get_golf(size_t *tablen, int *max, char ***tab) {
     (*tablen) = 0;
     (*max) = 0;
     (*tab) = NULL;
-#ifdef INTALL_MODE
+#ifdef INSTALL_MODE
+
+    char *file_path = malloc(30);
+
+    sprintf(file_path, "/usr/local/bin/golf_gti_MKII");
+#else
     char *path = getcwd(NULL, 0);
     if (path == NULL) {
         perror("getcwd");
@@ -25,11 +31,6 @@ void get_golf(size_t *tablen, int *max, char ***tab) {
     printf("%s\n", path);
     sprintf(file_path, "%s/golf_gti_MKII", path);
     free(path);
-#else
-
-    char *file_path = malloc(30);
-
-    sprintf(file_path, "/usr/local/bin/golf_gti_MKII");
 
 #endif
     FILE *fp = fopen(file_path, "r");

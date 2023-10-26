@@ -16,36 +16,37 @@ CFLAGS  = -Wall -Wextra
 
 LDFLAGS = -lncurses
 
-FEATURE_FLAGS =
-
 # Define installation directory
 INSTALL_DIR = /usr/local/bin
 INSTALL_FILES = golf_gti_MKII
 
-all:    $(NAME)
+all:	$(NAME)
 
-$(NAME):    $(OBJ)
-			gcc $(FEATURE_FLAGS) -o $(NAME) $(OBJ) $(LDFLAGS)
+$(NAME):	$(OBJ)
+	gcc -o $(NAME) $(OBJ) $(LDFLAGS)
 
-clean :
-	        rm -f $(OBJ)
+clean:
+	rm -f $(OBJ)
 
-fclean :	 clean
-			rm -f $(NAME)
+fclean:	clean
+	rm -f $(NAME)
 
-re : 		fclean all
+re:	fclean all
 
-debug:    CFLAGS += -g
-debug:    re
+debug:	CFLAGS += -g
+debug:	re
 
-install: FEATURE_FLAGS += -DINTALL_MODE
-install: re
-		cp $(NAME) $(INSTALL_DIR)
-		cp $(INSTALL_FILES) $(INSTALL_DIR)
-		chmod 755 $(INSTALL_DIR)/$(NAME)
+install:
+	sed -i '1s/^/#define INSTALL_MODE 1\n/' main.c
+	make re
+	sed -i '1d' main.c
+	cp $(NAME) $(INSTALL_DIR)
+	cp $(INSTALL_FILES) $(INSTALL_DIR)
+	chmod 755 $(INSTALL_DIR)/$(NAME)
+	make fclean
 
 uninstall:
-		rm -f $(INSTALL_DIR)/$(NAME)
-		rm -f $(INSTALL_DIR)/$(INSTALL_FILES)
+	rm -f $(INSTALL_DIR)/$(NAME)
+	rm -f $(INSTALL_DIR)/$(INSTALL_FILES)
 
 
