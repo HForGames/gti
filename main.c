@@ -27,8 +27,6 @@ void get_golf(size_t *tablen, int *max, char ***tab) {
         perror("malloc");
         exit(1);
     }
-
-    printf("%s\n", path);
     sprintf(file_path, "%s/golf_gti_MKII", path);
     free(path);
 
